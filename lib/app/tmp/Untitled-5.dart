@@ -217,7 +217,7 @@ class _PreviewPageState extends ConsumerState<PreviewPage> {
     final nowimgdescripcionlist = ref.watch( nowImgDescripcionProvider );
     final nowimgdescripcionlistNotifier = ref.read( nowImgDescripcionProvider.notifier );
 
-    final imageUseCase = ref.watch(imageUseCaseProvider);
+    // final imageUseCase = ref.watch(imageUseCaseProvider);
 
 
     return Scaffold(
@@ -288,9 +288,9 @@ class _PreviewPageState extends ConsumerState<PreviewPage> {
                 onPressed: (){
                   _savePhotoWithText(File(widget.picture.path),textOnImage); // guarda imagen en el telefono
                   // ImageUploadData img = ImageUploadData(tGeneralDataId: tGeneralDataId, cid: cid, nivel1: nivel1, nivel2: nivel2, description: description, nro_imagen: nro_imagen, eliminacion_logica: '1');
-                  String nro_orden = imageUseCase.getCode(selectedDropdownValue);
+                  // String nro_orden = imageUseCase.getCode(selectedDropdownValue);
                   
-                  final ImageUploadData imageUploadData = ImageUploadData(tGeneralDataId: '7', cid: '1111Test', nivel1: widget.titleSection, nivel2: widget.id, description: selectedDropdownValue, nro_imagen: nro_orden, eliminacion_logica: '1');
+                  final ImageUploadData imageUploadData = ImageUploadData(tGeneralDataId: '7', cid: '1111Test', nivel1: widget.titleSection, nivel2: widget.id, description: selectedDropdownValue, nro_imagen: '0', eliminacion_logica: '1');
                   // imageProv.addImage(widget.id,widget.picture,imageUploadData);
                   //actualizar selected
                   // listDescripcionNotifier.updateSelected(selectedDropdownValue);

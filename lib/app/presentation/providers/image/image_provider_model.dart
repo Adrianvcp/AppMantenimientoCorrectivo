@@ -95,7 +95,7 @@ final locationRepositoryProvider = Provider<LocationRepository>((ref) {
   return LocationRepositoryImpl(); 
 });
 
-final imageUseCaseProvider = Provider((ref) => ImageUseCase());
+// final imageUseCaseProvider = Provider((ref) => ImageUseCase());
 
 // final imageUploadNotifierProvider = StateNotifierProvider<ImageUploadNotifier, AsyncValue<Result>>(
 //   (ref) => ImageUploadNotifier(ref.read),

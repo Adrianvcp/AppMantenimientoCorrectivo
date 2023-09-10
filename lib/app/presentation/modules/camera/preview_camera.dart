@@ -329,7 +329,8 @@ class _PreviewPageState extends ConsumerState<PreviewPage>
     final nowimgdescripcionlist = ref.watch(nowImgDescripcionProvider);
     final nowimgdescripcionlistNotifier = ref.read(nowImgDescripcionProvider.notifier);
 
-    final imageUseCase = ref.watch(imageUseCaseProvider);
+    // final imageUseCase = ref.watch(imageUseCaseProvider);
+    final imageRepository = ref.watch(imageRepositoryProvider);
 
     for (var element in nowimgdescripcionlist.imageDescripcionList) {
       print(element.descripcion);
@@ -437,7 +438,7 @@ class _PreviewPageState extends ConsumerState<PreviewPage>
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TextButton(
-                  onPressed: () {
+                  onPressed: () async {
 
                     print('id: ' + widget.id.toString() );
 
@@ -452,7 +453,6 @@ class _PreviewPageState extends ConsumerState<PreviewPage>
                     
                     // ImageUploadData img = ImageUploadData(tGeneralDataId: tGeneralDataId, cid: cid, nivel1: nivel1, nivel2: nivel2, description: description, nro_imagen: nro_imagen, eliminacion_logica: '1');
                     
-                    Navigator.pop(context);
                     String nro_orden =  '0'; //'imageUseCase.getCode(selectedDropdownValue)';
                     print('selecccted: $selectedDropdownValue');
                     print('#ORDEN : $nro_orden');
@@ -468,10 +468,31 @@ class _PreviewPageState extends ConsumerState<PreviewPage>
                         nivel2: widget.id,
                         description: _textDescription,
                         nro_imagen: nro_orden,
+                        // createdAt: '', // revisar que debe
                         eliminacion_logica: '0' //no deberiamos enviar porque es por defecto
                         );
 
-                    imageProviderNotifier.addImage(widget.id, widget.picture, imageUploadData,position);
+
+
+                    // guardar imagne en ftp y en bd
+                    ImageModel img = ImageModel(position, widget.picture, imageUploadData);
+                    print('Enviar Imagenes');
+                    print(img);
+
+                    //Guardar imagen en el FTP y la informacion en BD
+                    DialogStatusCustom.showDialogLoading(context);
+                    await imageRepository
+                        .uploadImageFtpBD(img, widget.cid)
+                        .then((value)  {
+                      print(value);
+                      ImageUploadData imageUploadDataRes = value;
+
+                      imageProviderNotifier.addImage(widget.id, widget.picture, imageUploadDataRes,position);
+                      DialogStatusCustom.hideLoading(context);
+                      Navigator.pop(context);
+                    });
+                    
+
 
                     //actualizar selected
                     // listDescripcionNotifier.updateSelected(selectedDropdownValue);

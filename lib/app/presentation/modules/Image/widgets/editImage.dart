@@ -29,11 +29,13 @@ class EditImagePage extends ConsumerStatefulWidget {
   final XFile picture;
   String id;
   String position;
+  int idBd;
   EditImagePage(
       {super.key,
       required this.picture,
       required this.id,
-      required this.position
+      required this.position,
+      required this.idBd
       });
 
   @override
@@ -76,55 +78,55 @@ class _EditImagePageState extends ConsumerState<EditImagePage>
     WidgetsBinding.instance.addObserver(this);
 
     // ref.read( nowImgDescripcionProvider.notifier ).load().whenComplete(() => isloading = false, );
-    print('init1');
+    print('edit Image');
 
 
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.resumed) {
-      bool isServiceEnabledGPS =
-          await locationRepository.checkisEnabledService();
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) async {
+  //   super.didChangeAppLifecycleState(state);
+  //   if (state == AppLifecycleState.resumed) {
+  //     bool isServiceEnabledGPS =
+  //         await locationRepository.checkisEnabledService();
 
-      if (!isServiceEnabledGPS && isShowDialog == false) {
-        setState(() {
-          isShowDialog = true;
-        });
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('GPS Desactivado'),
-              content: Text('Por favor, activa el GPS para continuar.'),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('Cancelar'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    setState(() {
-                      isShowDialog = false;
-                    });
-                  },
-                ),
-                TextButton(
-                  child: Text('Activar GPS'),
-                  onPressed: () {
-                    Geolocator.openLocationSettings();
-                    Navigator.pop(context);
-                    setState(() {
-                      isShowDialog = false;
-                    });
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      }
-    }
-  }
+  //     if (!isServiceEnabledGPS && isShowDialog == false) {
+  //       setState(() {
+  //         isShowDialog = true;
+  //       });
+  //       showDialog(
+  //         context: context,
+  //         builder: (BuildContext context) {
+  //           return AlertDialog(
+  //             title: Text('GPS Desactivado'),
+  //             content: Text('Por favor, activa el GPS para continuar.'),
+  //             actions: <Widget>[
+  //               TextButton(
+  //                 child: Text('Cancelar'),
+  //                 onPressed: () {
+  //                   Navigator.pop(context);
+  //                   setState(() {
+  //                     isShowDialog = false;
+  //                   });
+  //                 },
+  //               ),
+  //               TextButton(
+  //                 child: Text('Activar GPS'),
+  //                 onPressed: () {
+  //                   Geolocator.openLocationSettings();
+  //                   Navigator.pop(context);
+  //                   setState(() {
+  //                     isShowDialog = false;
+  //                   });
+  //                 },
+  //               ),
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     }
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -220,15 +222,22 @@ class _EditImagePageState extends ConsumerState<EditImagePage>
     final imageProvider = ref.watch(imageProviderFamily(widget.id));
     final imageUpdateDescription = ref.watch(updateImageDescriptionProvider(widget.id));
 
-    final nowimgdescripcionlist = ref.watch(nowImgDescripcionProvider);
-    final nowimgdescripcionlistNotifier = ref.read(nowImgDescripcionProvider.notifier);
+    // final nowimgdescripcionlist = ref.watch(nowImgDescripcionProvider);
+    // final nowimgdescripcionlistNotifier = ref.read(nowImgDescripcionProvider.notifier);
 
-    final imageUseCase = ref.watch(imageUseCaseProvider);
+    final imageRepository = ref.watch(imageRepositoryProvider);
 
-    for (var element in nowimgdescripcionlist.imageDescripcionList) {
-      print(element.descripcion);
-    }
+    // final imageUseCase = ref.watch(imageUseCaseProvider);
 
+    // for (var element in nowimgdescripcionlist.imageDescripcionList) {
+    //   print(element.descripcion);
+    // }
+
+
+    print(widget.id);
+    print(widget.position);
+    print(widget.key);
+    print(widget.picture);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Edit Image')),
@@ -300,7 +309,7 @@ class _EditImagePageState extends ConsumerState<EditImagePage>
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TextButton(
-                  onPressed: () {
+                  onPressed: () async {
 
                     if (_textDescription.isEmpty || _textDescription == '') {
                       setState(() {
@@ -313,26 +322,27 @@ class _EditImagePageState extends ConsumerState<EditImagePage>
 
                     String position = imageProvider.images.length > 0 ? (imageProvider.images.length).toString() : '0';
 
-                    // final ImageUploadData imageUploadData = ImageUploadData(
-                    //     tGeneralDataId: '53',
-                    //     cid: '123',
-                    //     nivel1: widget.titleSection,
-                    //     nivel2: widget.id,
-                    //     description: _textDescription,
-                    //     nro_imagen: nro_orden,
-                    //     eliminacion_logica: '0' //no deberiamos enviar porque es por defecto
-                    //     );
+                    DialogStatusCustom.showDialogLoading(context);
+                    await imageRepository
+                        .updateDescriptionImage(widget.idBd, _textDescription)
+                        .then((value)  {
+                          
+                      // ImageUploadData imageUploadDataRes = value;
+                      
+                      imageProviderNotifier.updateImageDescription(_textDescription,int.parse(widget.position));
 
-                    // imageProvider.images[0] = imageProvider.images[0].imagelUploadModel.copyWith(description: _textDescription);
-                    // context.read(updateImageDescriptionProvider(widget.id)).call(newDescription);
+                      DialogStatusCustom.hideLoading(context);
+                      Navigator.pop(context);
+                    });
+
+                    // imageProviderNotifier.updateImageDescription(_textDescription,int.parse(widget.position));
+
                     
-                    imageProviderNotifier.updateImageDescription(_textDescription,int.parse(widget.position));
                     print('TEXT');
                     print(imageProvider.id);
                     
                     // imageUpdateDescription.call('111',1);
                     print(_textDescription);
-                    Navigator.pop(context, false);
                     // imageUpdateDescription(_textDescription,int.parse(widget.position));
                                         
 

@@ -151,7 +151,7 @@ class SectionImages extends ConsumerStatefulWidget {
 }
 
 class _SectionImagesState extends ConsumerState<SectionImages> {
-  DottedBorderCustom dottedBorderEmpty = DottedBorderCustom(id: '',onDeletePressed: (){}, position: '0',onEditPressed: (){}); // Lista para almacenar los DottedBorder
+  DottedBorderCustom dottedBorderEmpty = DottedBorderCustom(id: '',onDeletePressed: (){}, idBd: -1,position: '0',onEditPressed: (){}); // Lista para almacenar los DottedBorder
   // List<CameraDescription> listCamerasAvailables = [];
   List<XFile>? _mediaFileList;
     List<String> dataList = ['as'];
@@ -169,6 +169,7 @@ class _SectionImagesState extends ConsumerState<SectionImages> {
           // print('fin del setImage');
 
   }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -178,7 +179,7 @@ class _SectionImagesState extends ConsumerState<SectionImages> {
 
   }
 
-    @override
+  @override
   void deactivate() {
     super.deactivate();
   }
@@ -206,12 +207,9 @@ class _SectionImagesState extends ConsumerState<SectionImages> {
   }) async {
     if (context.mounted) {
       
-      final XFile? pickedFile = await _picker.pickImage(
-        source: source
-      );
+      final XFile? pickedFile = await _picker.pickImage(source: source);
 
       DialogStatusCustom.showDialogLoading(context);
-      
       await DialogStatusCustom.wait();
 
       setState(() {
@@ -227,10 +225,6 @@ class _SectionImagesState extends ConsumerState<SectionImages> {
                       titleSection: widget.titleSection,
                     )));
       });
-
-      
-
-
     }
   }
 
@@ -276,8 +270,8 @@ class _SectionImagesState extends ConsumerState<SectionImages> {
     final generatedChildren = List.generate(
       images.length,
       (index) => Container(
-        key: Key(images.elementAt(index).imagelUploadModel.registro),
-        child: DottedBorderCustom(id:widget.id,picture: images[index].image,position: index.toString(),onDeletePressed: (){}, onEditPressed: (){})//dottedBorder[index];,
+        key: Key(images.elementAt(index).imagelUploadModel.id.toString()),  //Key(images.elementAt(index).imagelUploadModel.description + DateTime.now().toString()), //        key: Key(images.elementAt(index).imagelUploadModel.createdAt),
+        child: DottedBorderCustom(id:widget.id,picture: images[index].image,position: index.toString(),idBd: images.elementAt(index).imagelUploadModel.id!,onDeletePressed: (){}, onEditPressed: (){})//dottedBorder[index];,
       ),
     );
     print('generatedChildren');
@@ -285,7 +279,6 @@ class _SectionImagesState extends ConsumerState<SectionImages> {
     print(generatedChildren);
     return Column(
       children: [
-
         Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

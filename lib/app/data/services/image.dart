@@ -12,7 +12,8 @@ class ImageAPI{
 
   final Client _client;
   final _baseUrl ='https://invulnerable-bastille-39566-a52ccd510b57.herokuapp.com/api';
-  
+  final _localUrl ='http://192.168.89.215:3001/api';
+
   Future<List<ImageDescripcion>> getImageDescripcionList() async{
     final response = await _client.post(Uri.parse('$_baseUrl/descripcion/list'));
     if(response.statusCode==200){
@@ -44,8 +45,8 @@ class ImageAPI{
           request.fields['Nivel2'] = element.imagelUploadModel.nivel2;
           request.fields['Description'] = element.imagelUploadModel.description;
           request.fields['nro_imagen'] = element.imagelUploadModel.nro_imagen;
-          request.fields['createdAd'] = element.imagelUploadModel.registro;
-          request.fields['eliminacion_logica'] = element.imagelUploadModel.eliminacion_logica;
+          // request.fields['createdAd'] = element.imagelUploadModel.registro;
+          request.fields['eliminacion_logica'] = element.imagelUploadModel.eliminacion_logica!;
 
           print(request.fields);
           var response = await request.send();
@@ -60,6 +61,84 @@ class ImageAPI{
 
 
   }
+
+  //Carga UNA imagen al servidor FTP y la informacion en la BD
+  Future<ImageUploadData> uploadImageFtpBD(ImageModel _imageModel,String cid) async {
+    
+      // if(_imageModel.image == null){
+      //   throw Exception('Image is null');
+      // }
+
+      var request = MultipartRequest(
+        'POST',
+        Uri.parse('https://invulnerable-bastille-39566-a52ccd510b57.herokuapp.com/api/imagen/saveImage'),
+      );
+
+      request.files.add(await MultipartFile.fromPath('image', _imageModel.image.path));
+      request.fields['t_general_data_id'] = '7';
+      request.fields['CID'] = '19763313';
+      request.fields['Nivel1'] = _imageModel.imagelUploadModel.nivel1;
+      request.fields['Nivel2'] = _imageModel.imagelUploadModel.nivel2;
+      request.fields['Description'] = _imageModel.imagelUploadModel.description;
+      request.fields['nro_imagen'] = _imageModel.imagelUploadModel.nro_imagen;
+
+      var response = await request.send();
+      var respStr = await Response.fromStream(response);
+
+      final resultjson = jsonDecode(respStr.body) as Map<String, dynamic>;
+      print(resultjson['image']);
+
+      final result =  ImageUploadData.fromJson(resultjson['image']);
+      print(result);
+      print(result.id);
+      // final id = int.parse(result['image']['id']);
+
+      if (response.statusCode == 200) {
+        print('Image uploaded');
+        return result;
+      } else {
+        print('Image upload failed');
+        return result;
+      }
+      
+  }
+
+  //Carga UNA imagen al servidor FTP y la informacion en la BD
+  Future<void> updateDescriptionImage(int id,String description) async {
+    
+    final Map<String, dynamic> bodySend = {
+      'id': id,
+      'Description': description,
+    };
+
+    final response = await _client.patch(
+        Uri.parse('$_baseUrl/imagen/editImage'),headers: {"Content-Type": "application/json"},
+        body: json.encode(bodySend));
+
+    print(bodySend);
+    print(response.body);
+      if (response.statusCode == 200) {
+        print('Description uploaded');
+      } else {
+        print('Description failed');
+      }
+      
+  }
+
+
+    // print('image: ${_imageModel.image}');
+
+    // print('cid: ${_imageModel.imagelUploadModel.cid}');
+    // print('description: ${_imageModel.imagelUploadModel.description}');
+    // print('eliminacion_logica: ${_imageModel.imagelUploadModel.eliminacion_logica}');
+    // print('nivel1: ${_imageModel.imagelUploadModel.nivel1}');
+    // print('nivel2: ${_imageModel.imagelUploadModel.nivel2}');
+    // print('nro_imagen: ${_imageModel.imagelUploadModel.nro_imagen}');
+    // print('tGeneralDataId: ${_imageModel.imagelUploadModel.tGeneralDataId}');
+
+    // print('cid: ${_imageModel.index}');
+
+      // print('path: ${_imageModel.image.path}');
 
 
 

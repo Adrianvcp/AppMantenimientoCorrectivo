@@ -23,6 +23,26 @@ class ImageRepositoryImpl implements ImageRepository {
     return _imageAPI.uploadImage(imgList,cid);
   }
   
+  @override
+  Future<ImageUploadData> uploadImageFtpBD(ImageModel imageModel, String cid) {
+    // TODO: implement uploadImageFtpBD
+    return _imageAPI.uploadImageFtpBD(imageModel, cid);
+  }
+  
+  @override
+  Future<void> deleteImage(ImageModel imageModel, String cid) {
+    // TODO: implement deleteImage
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> updateDescriptionImage(int id, String newDescription) {
+    // TODO: implement updateDescriptionImage
+    return _imageAPI.updateDescriptionImage(id, newDescription);
+  }
+  
+
+  
 
 }
 

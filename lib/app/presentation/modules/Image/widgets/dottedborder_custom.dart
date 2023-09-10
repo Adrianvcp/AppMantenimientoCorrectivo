@@ -16,8 +16,10 @@ class DottedBorderCustom extends ConsumerStatefulWidget {
   final String position;
   final VoidCallback onDeletePressed;
   final VoidCallback onEditPressed;
+  final int idBd;
   DottedBorderCustom(
       {required this.id,
+      required this.idBd,
       this.picture = null,
       required this.position,
       required this.onDeletePressed,
@@ -113,12 +115,15 @@ class _DottedBorderCustomState extends ConsumerState<DottedBorderCustom> {
                       child: Align(
                         child: TextButton(
                           onPressed: () {
+
+                            print('IDDDD: ${widget.idBd }' );
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => EditImagePage(
                                         picture: widget.picture!,
                                         // cid: widget.cid,
+                                        idBd: widget.idBd,
                                         id: widget.id,
                                         position: widget.position,
                                         // titleSection: widget.titleSection

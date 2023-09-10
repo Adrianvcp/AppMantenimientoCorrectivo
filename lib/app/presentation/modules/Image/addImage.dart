@@ -99,6 +99,8 @@ class _AddImageState extends ConsumerState<AddImage>
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
+
+            
             print('Enviar Imagenes');
 
             List<String> listaSecciones = [
@@ -114,8 +116,16 @@ class _AddImageState extends ConsumerState<AddImage>
               List<ImageModel> images = imageProv.getImages();
 
               for (var i = 0; i < images.length; i++) {
-                print('---- valor de index en AddImage ${images[0].index}');
-                print('---- valor de descripcion en AddImage ');
+                print('---- Index:  ${images[i].index}');
+                print('---- Index:  ${images[i].image}');
+                print('---- cid:  ${images[i].imagelUploadModel.cid}');
+                print('---- description:  ${images[i].imagelUploadModel.description}');
+                print('---- eliminacion_logica:  ${images[i].imagelUploadModel.eliminacion_logica}');
+                print('---- id:  ${images[i].imagelUploadModel.id}');
+                print('---- nivel1:  ${images[i].imagelUploadModel.nivel1}');
+                print('---- nivel2:  ${images[i].imagelUploadModel.nivel2}');
+                print('---- nro_imagen:  ${images[i].imagelUploadModel.nro_imagen}');
+                print('---- tGeneralDataId:  ${images[i].imagelUploadModel.tGeneralDataId}');
               }
 
               // imageRepository.uploadImage(images, widget.cid);
